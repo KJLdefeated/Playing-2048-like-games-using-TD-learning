@@ -1,0 +1,7 @@
+Report/*.aux
+Report/*.log
+Report/*.listing
+Report/*.synctex.gz
+threes.dSYM
+stats.txt
+threes

@@ -179,27 +179,32 @@ private:
 class greedy_slider : public agent {
 public:
 	virtual action take_action(const board& before) {
-		int best_r=-1, best_a=-1;
-		for(int i=2;i<4;i++){
-			int p = board(before).slide(i);
-			if(p > best_r){
-				best_r = p;
-				best_a = i;
-			}
+		int best_r=-1, best_a=-1, act[4]={0,1,2,3};
+		int p = board(before).slide(act[0]);
+		if(p > best_r){
+			best_r = p;
+			best_a = act[0];
+		}
+		p = board(before).slide(act[1]);
+		if(p > best_r){
+			best_r = p;
+			best_a = act[1];
 		}
 		if(best_r!=-1)return action::slide(best_a);
-		for(int i=0;i<2;i++){
-			int p = board(before).slide(i);
-			if(p > best_r){
-				best_r = p;
-				best_a = i;
-			}
+		p = board(before).slide(act[2]);
+		if(p > best_r){
+			best_r = p;
+			best_a = act[2];
+		}
+		p = board(before).slide(act[3]);
+		if(p > best_r){
+			best_r = p;
+			best_a = act[3];
 		}
 		if(best_r!=-1)return action::slide(best_a);
 		return action();
 	}
-//private:
-	//std::array<int, 4> opcode;
+
 };
 
 /*

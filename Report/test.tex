@@ -1,0 +1,64 @@
+\documentclass{article} % This command is used to set the type of document you are working on such as an article, book, or presenation
+
+\usepackage{geometry} % This package allows the editing of the page layout
+\usepackage{amsmath}  % This package allows the use of a large range of mathematical formula, commands, and symbols
+\usepackage{graphicx}  % This package allows the importing of images
+
+\newcommand{\question}[2][]{\begin{flushleft}\textbf{Question #1}: \textit{#2}\end{flushleft}}
+\newcommand{\sol}{\textbf{Solution}:} %Use if you want a boldface solution line
+\newcommand{\maketitletwo}[2][]{\begin{center}
+        \Large{\textbf{Project 1 Report}
+        
+            Theory of Computer Game} % Name of course here
+        \vspace{5pt}
+        
+        \normalsize{
+            Name: Kai-Jie Lin 
+            
+            Student ID: 110652019
+            
+            \today}
+        \vspace{15pt}
+        \end{center}}
+\begin{document}
+    \maketitletwo[5]  % Optional argument is assignment number
+    %Keep a blank space between maketitletwo and \question[1]
+    
+    \section{Method} 
+    My method for this game is greedy approach and corner strategy. The agent will priorly choose the biggest reward between sliding right and sliding down.
+    Thus it can make the biggest tile stay in the right down corner. 
+    In the experiment section below, we can see that the performence between four corner approach won't vary too much. Since the placer is randomness, the best performence one do not mean the best approach, it is just lucky.
+
+    \section{Experiment}
+    I use different approach to see the difference of their performence.
+    In the left column, Random means we randomly choose four action, Greedy is taking the action with max reward, and corner one is concentrate the tile in the corner and do greedy to take action with max reward. 
+    We can see that the a simple greedy approach and corner strategy can get well assessment under the given judger.
+    \begin{table}[htbp]
+        \centering 
+        \caption{Compare with different strategy}
+        \begin{tabular}{|c|c|c|}
+            \hline
+            & & \\ [-6pt]
+            Approach & Assessment & Avg score  \\
+            \hline
+            & & \\ [-6pt]
+            Random   & 65.8       & 287 \\
+            \hline
+            & & \\ [-6pt]
+            Greedy   & 88.8       & 705 \\
+            \hline
+            & & \\ [-6pt]
+            Up right corner & 95.5 & 876  \\
+            \hline
+            & & \\ [-6pt]
+            Down right corner & 93.3 & 805 \\
+            \hline
+            & & \\ [-6pt]
+            Down left corner & 92.6 & 787 \\
+            \hline
+            & & \\ [-6pt]
+            Up left corner & 93.5 & 811 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{document}
