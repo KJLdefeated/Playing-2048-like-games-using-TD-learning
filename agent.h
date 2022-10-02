@@ -71,8 +71,16 @@ protected:
  * base agent for agents with weight tables and a learning rate
  */
 class weight_agent : public agent {
+protected:
+	static const int MAX_INDEX = 16;
+	static const int TUPLE_NUM = 8;
+	static const int TUPLE_LEN = 4;
+	std::vector<weight> net;
+	static const std::array<std::array<int, TUPLE_LEN>, TUPLE_NUM> indexs;
+	float alpha=0.0125;
+	
 public:
-	weight_agent(const std::string& args = "") : agent(args), alpha(0) {
+	weight_agent(const std::string& args = "") : agent(args), alpha(0.0125f) {
 		if (meta.find("init") != meta.end())
 			init_weights(meta["init"]);
 		if (meta.find("load") != meta.end())
@@ -102,6 +110,7 @@ protected:
 		for (weight& w : net) in >> w;
 		in.close();
 	}
+
 	virtual void save_weights(const std::string& path) {
 		std::ofstream out(path, std::ios::out | std::ios::binary | std::ios::trunc);
 		if (!out.is_open()) std::exit(-1);
@@ -111,9 +120,31 @@ protected:
 		out.close();
 	}
 
-protected:
-	std::vector<weight> net;
-	float alpha;
+	float board_value(const board&b){
+		float ans = 0;
+		for(int i=0;i<TUPLE_NUM;i++)
+			ans += net[i][get_feature(b, indexs[i])];
+		return ans;
+	}
+
+	int get_feature(const board &b, const std::array<int, TUPLE_LEN> index){
+		int ans=0;
+		int tile;
+		for(auto i:index){
+			ans *= MAX_INDEX;
+			tile = b[i/4][i%4];
+			if(tile >= MAX_INDEX - 1)ans += (MAX_INDEX-1);
+			else ans += tile; 
+		}
+		return ans;
+	}
+
+	virtual void init_network(){
+		int feature_num = MAX_INDEX * MAX_INDEX * MAX_INDEX * MAX_INDEX;
+		for(int i=0;i<TUPLE_NUM;i++){
+			net.push_back(weight(feature_num));
+		}
+	}
 };
 
 /**
@@ -207,30 +238,81 @@ public:
 
 };
 
-/*
-class weight_slider : weight_agent{
-	void init(int n,int m){
-		srand((unsigned)time(NULL));
-		for(int i=0;i<n;i++){
-			weight v;
-			int sum = 0;
-			for(int j=0;j<m;j++){
-				int x = rand();
-				v.value.push_back(x);
-				sum += x;
-			}
-			for(float it : v.value)it /= sum;
-			net.push_back(v);
-		}
+class weight_slider : public weight_agent {
+protected:
+	struct state{
+		board st;
+		int rew;
+	};
+	std::vector<state> episode;
+public:
+
+	weight_slider(const std::string& args) : weight_agent("name=slide role=slider " + args){}
+
+	virtual void open_episode(const std::string& flag = "") {
+		episode.clear();
 	}
-	virtual action take_action(const board& before) {
-		std::vector<float> obs;
-		for(int i=0;i<4;i++){
-			for(int j=0;j<4;j++){
-				
-			}
+
+	virtual void close_episode(const std::string& flag = "") {
+		train_weight(episode[episode.size()-1].st);
+		for(int i=episode.size()-2;i>=0;i--){
+			state ept = episode[i+1];
+			train_weight(episode[i].st, ept.st, ept.rew);
 		}
 	}
 
+	virtual action take_action(const board& before){
+		int best_op = 0;
+		float best_val = -9999999;
+		board b_t;
+		int best_rew = 0;
 
-};*/
+		for(int op:{0,1,2,3}){
+			board b = before;
+			int rew = b.slide(op);
+			if(rew != -1){
+				float val = rew + board_value(b);
+				if(val > best_val){
+					best_val = val;
+					best_op = op;
+					b_t = b;
+					best_rew = rew;
+				}
+			}
+		}
+
+		if(best_val != -9999999){
+			episode.push_back(state{b_t, best_rew});
+		}
+
+		return action::slide(best_op);
+	}
+
+	//train weight for the last episode
+	void train_weight(const board& b){
+		float delta = -alpha * board_value(b);
+		for(int i=0;i<TUPLE_NUM;i++){
+			net[i][get_feature(b, indexs[i])] += delta;
+		}
+	}
+	//train weight for the episode+1 and episode
+	void train_weight(const board& b, const board& b_t, const int rew){
+		float delta = alpha * (rew + board_value(b_t) - board_value(b));
+		for(int i=0;i<TUPLE_NUM;i++){
+			net[i][get_feature(b, indexs[i])] += delta;
+		}
+	}
+};
+
+//The index of features in N-tuple 8x4
+const std::array<std::array<int, weight_agent::TUPLE_LEN>, weight_agent::TUPLE_NUM> weight_agent::indexs = {{
+	{{0, 4, 8, 12}},
+	{{1, 5, 9, 13}},
+	{{2, 6, 10, 14}},
+	{{3, 7, 11, 15}},
+	
+	{{0, 1, 2, 3}},
+	{{4, 5, 6, 7}},
+	{{8, 9, 10, 11}},
+	{{12, 13, 14, 15}}
+}};

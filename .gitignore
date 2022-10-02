@@ -5,3 +5,5 @@ Report/*.synctex.gz
 threes.dSYM
 stats.txt
 threes
+*.log
+*.bin

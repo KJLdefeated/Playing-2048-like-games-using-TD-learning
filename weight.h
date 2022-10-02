@@ -18,7 +18,7 @@ public:
 
 public:
 	weight() {}
-	weight(size_t len) : value(len) {}
+	weight(size_t len) : value(len,0) {}
 	weight(weight&& f) : value(std::move(f.value)) {}
 	weight(const weight& f) = default;
 
@@ -44,6 +44,6 @@ public:
 		return in;
 	}
 
-//protected:
+protected:
 	std::vector<type> value;
 };

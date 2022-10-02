@@ -61,7 +61,8 @@ int main(int argc, const char* argv[]) {
 		if (stats.is_finished()) stats.summary();
 	}
 
-	greedy_slider slide;
+	//greedy_slider slide;
+	weight_slider slide(slide_args);
 	//random_slider slide(slide_args);
 	random_placer place(place_args);
 
@@ -69,13 +70,13 @@ int main(int argc, const char* argv[]) {
 //		std::cerr << "======== Game " << stats.step() << " ========" << std::endl;
 		slide.open_episode("~:" + place.name());
 		place.open_episode(slide.name() + ":~");
-
+		
 		stats.open_episode(slide.name() + ":" + place.name());
 		episode& game = stats.back();
 		while (true) {
 			agent& who = game.take_turns(slide, place);
 			action move = who.take_action(game.state());
-//			std::cerr << game.state() << "#" << game.step() << " " << who.name() << ": " << move << std::endl;
+//			std::cout << game.state() << "#" << game.step() << " " << who.name() << ": " << move << std::endl;
 			if (game.apply_action(move) != true) break;
 			if (who.check_for_win(game.state())) break;
 		}
