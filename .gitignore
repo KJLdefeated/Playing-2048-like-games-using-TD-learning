@@ -4,6 +4,8 @@ Report/*.listing
 Report/*.synctex.gz
 threes.dSYM
 stats.txt
+stats2.txt
+stats16.txt
 threes
 *.log
 *.bin

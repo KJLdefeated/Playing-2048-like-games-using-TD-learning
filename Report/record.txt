@@ -1,0 +1,66 @@
+10/5:
+8x4x6-tuple network / max index: 14
+training: epoch = 300000 / lr = (epoch > 100000 ? 0.005 : 0.01)
+Result:
+1000	avg = 53882, max = 92211, ops = 418183 (232406|2893930)
+	48	100%	(0.3%)
+	96	99.7%	(2.2%)
+	192	97.5%	(4%)
+	384	93.5%	(8.5%)
+	768	85%	(21.9%)
+	1536	63.1%	(63.1%)
+Judging the actions... Passed
+Judging the speed... Passed, expected 51946 ops
+Assessment: 87.4 points
+weight size = 987 MB
+Comment: Max index too low
+--------------------------------------------------------------
+10/8:
+8x4x6-tuple network / max index: 15
+training: epoch = 300000 / lr = (epoch = 100000 : 0.01;epoch = 200000 : 0.005;epoch = 300000 : 0.0025)
+Result:
+1000	avg = 59226, max = 92580, ops = 358713 (197136|2758670)
+	48	100%	(0.4%)
+	96	99.6%	(0.8%)
+	192	98.8%	(2.4%)
+	384	96.4%	(8.5%)
+	768	87.9%	(18.6%)
+	1536	69.3%	(69.3%)
+Judging the actions... Passed
+Judging the speed... Passed, expected 52510 ops
+Assessment: 92.9 points
+weight size = 1.5 GB
+Comment: too much memory
+--------------------------------------------------------------
+8x4x6-tuple network / max index = 16
+training: epoch = 800000 / lr = (epoch = 100000 : 0.01; epoch = 200000 : 0.005; epoch >= 300000 : 0.0025)
+Result:
+1000	avg = 61654, max = 89238, ops = 355911 (195268|2555976)
+	24	100%	(0.1%)
+	48	99.9%	(0.7%)
+	96	99.2%	(1.2%)
+	192	98%	(3.3%)
+	384	94.7%	(6.5%)
+	768	88.2%	(15.3%)
+	1536	72.9%	(72.9%)
+
+Judging the actions... Passed
+Judging the speed... Passed, expected 52510 ops
+Assessment: 89.7 points
+weight size = 2.15 GB
+--------------------------------------------------------------
+8x4x6-tuple network / max index = 14
+training: epoch = 1000000 / lr = 0.025
+Result:
+1000    avg = 61404, max = 93444, ops = 456093 (253983|2944106)
+        48      100%    (0.4%)
+        96      99.6%   (1%)
+        192     98.6%   (2.7%)
+        384     95.9%   (6.9%)
+        768     89%     (15.9%)
+        1536    73.1%   (73.1%)
+
+Judging the actions... Passed
+Judging the speed... Passed
+Assessment: 92 points
+weight size = 967 MB
