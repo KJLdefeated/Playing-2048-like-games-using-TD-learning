@@ -72,15 +72,15 @@ protected:
  */
 class weight_agent : public agent {
 protected:
-	static const int MAX_INDEX = 14;
-	static const int TUPLE_NUM = 32;
+	static const int MAX_INDEX = 16;
+	static const int TUPLE_NUM = 4;
 	static const int TUPLE_LEN = 6;
 	std::vector<weight> net;
 	static const std::array<std::array<int, TUPLE_LEN>, TUPLE_NUM> indexs;
 	float alpha;
 	
 public:
-	weight_agent(const std::string& args = "") : agent(args), alpha(0.01f) {
+	weight_agent(const std::string& args = "") : agent(args), alpha(0.025f) {
 		if (meta.find("init") != meta.end())
 			init_weights(meta["init"]);
 		else init_network();
@@ -123,8 +123,25 @@ protected:
 
 	float board_value(const board&b){
 		float ans = 0;
-		for(int i=0;i<TUPLE_NUM;i++)
-			ans += net[i][get_feature(b, indexs[i])];
+		board tmp = b;
+		for(int j=0;j<4;j++){
+			tmp.rotate();
+			for(int i=0;i<TUPLE_NUM;i++)
+				ans += net[i][get_feature(tmp, indexs[i])];
+		}
+		tmp.reflect_horizontal();
+		for(int j=0;j<4;j++){
+			tmp.rotate();
+			for(int i=0;i<TUPLE_NUM;i++)
+				ans += net[i][get_feature(tmp, indexs[i])];
+		}
+		tmp.reflect_horizontal();
+		tmp.reflect_vertical();
+		for(int j=0;j<4;j++){
+			tmp.rotate();
+			for(int i=0;i<TUPLE_NUM;i++)
+				ans += net[i][get_feature(tmp, indexs[i])];
+		}
 		return ans;
 	}
 
@@ -298,15 +315,53 @@ public:
 	//train weight for the last episode
 	void train_weight(const board& b){
 		float delta = -alpha * board_value(b);
-		for(int i=0;i<TUPLE_NUM;i++){
-			net[i][get_feature(b, indexs[i])] += delta;
+		board tmp = b;
+		for(int j=0;j<4;j++){
+			tmp.rotate();
+			for(int i=0;i<TUPLE_NUM;i++){
+				net[i][get_feature(tmp, indexs[i])] += delta;
+			}
+		}
+		tmp.reflect_horizontal();
+		for(int j=0;j<4;j++){
+			tmp.rotate();
+			for(int i=0;i<TUPLE_NUM;i++){
+				net[i][get_feature(tmp, indexs[i])] += delta;
+			}
+		}
+		tmp.reflect_horizontal();
+		tmp.reflect_vertical();
+		for(int j=0;j<4;j++){
+			tmp.rotate();
+			for(int i=0;i<TUPLE_NUM;i++){
+				net[i][get_feature(tmp, indexs[i])] += delta;
+			}
 		}
 	}
 	//train weight for the episode+1 and episode
 	void train_weight(const board& b, const board& b_t, const int rew){
 		float delta = alpha * (rew + board_value(b_t) - board_value(b));
-		for(int i=0;i<TUPLE_NUM;i++){
-			net[i][get_feature(b, indexs[i])] += delta;
+		board tmp = b;
+		for(int j=0;j<4;j++){
+			tmp.rotate();
+			for(int i=0;i<TUPLE_NUM;i++){
+				net[i][get_feature(tmp, indexs[i])] += delta;
+			}
+		}
+		tmp.reflect_horizontal();
+		for(int j=0;j<4;j++){
+			tmp.rotate();
+			for(int i=0;i<TUPLE_NUM;i++){
+				net[i][get_feature(tmp, indexs[i])] += delta;
+			}
+		}
+		tmp.reflect_horizontal();
+		tmp.reflect_vertical();
+		for(int j=0;j<4;j++){
+			tmp.rotate();
+			for(int i=0;i<TUPLE_NUM;i++){
+				net[i][get_feature(tmp, indexs[i])] += delta;
+			}
 		}
 	}
 };
@@ -316,41 +371,5 @@ const std::array<std::array<int, weight_agent::TUPLE_LEN>, weight_agent::TUPLE_N
 	{{0, 4, 8, 9, 12, 13}},
 	{{1, 5, 9, 10, 13, 14}},
 	{{1, 2, 5, 6, 9, 10}},
-	{{2, 3, 6, 7, 10, 11}},
-	
-	{{3, 2, 1, 5, 0, 4}},
-	{{7, 6, 5, 9, 4, 8}},
-	{{7, 11, 6, 10, 5, 9}},
-	{{11, 15, 10, 14, 9, 13}},
-
-	{{15, 11, 7, 6, 3, 2}},
-	{{14, 10, 6, 5, 2, 1}},
-	{{14, 13, 10, 9, 6, 5}},
-	{{13, 12, 9, 8, 5, 4}},
-
-	{{12, 13, 14, 10, 15, 11}},
-	{{8, 9, 10, 6, 11, 7}},
-	{{8, 4, 9, 5, 10, 6}},
-	{{4, 0, 5, 1, 6, 2}},
-
-
-	{{3, 7, 11, 10, 15, 14}},
-	{{2, 6, 10, 9, 14, 13}},
-	{{2, 1, 6, 5, 10, 9}},
-	{{1, 0, 5, 4, 9, 8}},
-
-	{{0, 1, 2, 6, 3, 7}},
-	{{4, 5, 6, 10, 7, 11}},
-	{{4, 8, 5, 9, 6, 10}},
-	{{8, 12, 9, 13, 10, 14}},
-
-	{{12, 8, 4, 5, 0, 1}},
-	{{13, 9, 5, 6, 1, 2}},
-	{{13, 14, 9, 10, 5, 6}},
-	{{14, 15, 10, 11, 6, 7}},
-
-	{{15, 14, 13, 9, 12, 8}},
-	{{11, 10, 9, 5, 8, 4}},
-	{{11, 7, 10, 6, 9, 5}},
-	{{7, 3, 6, 2, 5, 1}}
+	{{2, 3, 6, 7, 10, 11}}
 }};

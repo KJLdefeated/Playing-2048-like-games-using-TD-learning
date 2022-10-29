@@ -2,6 +2,7 @@ Report/*.aux
 Report/*.log
 Report/*.listing
 Report/*.synctex.gz
+train_test
 threes.dSYM
 stats.txt
 stats2.txt
