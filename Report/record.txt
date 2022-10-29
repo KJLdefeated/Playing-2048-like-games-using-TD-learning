@@ -13,7 +13,7 @@ Judging the actions... Passed
 Judging the speed... Passed, expected 51946 ops
 Assessment: 87.4 points
 weight size = 987 MB
-Comment: Max index too low
+Comment: Max index too low / few epoch
 --------------------------------------------------------------
 10/8:
 8x4x6-tuple network / max index: 15
